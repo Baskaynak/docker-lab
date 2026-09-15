@@ -1,0 +1,31 @@
+name: Docker CI
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: Docker image build et
+        run: docker build -t benim-nginx:test .
+
+      - name: Container calistir
+        run: docker run -d --name test-container -p 8080:80 benim-nginx:test
+
+      - name: Uygulamayi test et
+        run: |
+          sleep 3
+          curl -f http://localhost:8080
+
+      - name: Test containerini temizle
+        if: always()
+        run: docker rm -f test-container

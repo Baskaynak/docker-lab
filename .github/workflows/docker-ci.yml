@@ -29,3 +29,12 @@ jobs:
       - name: Test containerini temizle
         if: always()
         run: docker rm -f test-container
+
+      - name: Docker Hub login
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Image tagle
+        run: docker tag benim-nginx:test ${{ secrets.DOCKERHUB_USERNAME }}/benim-nginx:latest
+
+      - name: Docker Hub'a push et
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/benim-nginx:latest

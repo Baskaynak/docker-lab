@@ -1,0 +1,34 @@
+name: CI CD Practice
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Docker image build et
+        run: docker build -t benim-nginx:test .
+
+      - name: Container calistir
+        run: docker run -d --name test-container -p 8080:80 benim-nginx:test
+
+      - name: Uygulamayi test et
+        run: |
+          sleep 3
+          curl -f http://localhost:8080
+
+      - name: Docker Hub login
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Image tagle
+        run: docker tag benim-nginx:test ${{ secrets.DOCKERHUB_USERNAME }}/benim-nginx:latest
+
+      - name: Docker Hub push
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/benim-nginx:latest
